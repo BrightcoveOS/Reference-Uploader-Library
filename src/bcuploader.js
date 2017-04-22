@@ -1,21 +1,30 @@
-/* eslint-env browser */
-
 var Evaporate = require('evaporate');
 var Hashes = require('jshashes');
 var AWS = require('aws-sdk');
 
 var noop = function(){};
 
-// Public API
-// - file: a File object from a file input
-// - uploadUrl: creates BC video id and returns it along with s3 bucket, public key, & object_key
-// - signerUrl: signs each part of the multipart upload, conforms to EvaporateJS signerUrl
-// - ingestUrl: url to hit on your server when s3 upload is finished to trigger DI job
-// - returns a promise
-function uploadVideo(file, uploadUrl, signerUrl, ingestUrl) { // eslint-disable-line no-unused-vars
+function MissingParamError(param) {
+  this.name = 'MissingParamError';
+  this.message = 'A required parameter "' + param + '" was not provided in the constructor to BCUploader.';
+  // TODO: Add link to documentation in error message
+  this.stack = new Error().stack;
+}
+MissingParamError.prototype = Error.prototype;
+
+function BCUploader(params) {
   var config;
 
-  return startBrightcoveDI(uploadUrl, file.name)
+  if (typeof params.createVideoEndpoint === 'undefined') throw new MissingParamError('createVideoEndpoint');
+  if (typeof params.signUploadEndpoint === 'undefined') throw new MissingParamError('signUploadEndpoint');
+  if (typeof params.ingestUploadEndpoint === 'undefined') throw new MissingParamError('ingestUploadEndpoint');
+
+  var createVideoEndpoint = params.createVideoEndpoint;
+  var signUploadEndpoint = params.signUploadEndpoint;
+  var ingestUploadEndpoint = params.ingestUploadEndpoint;
+  var file = params.file || {name:''}; // TODO: remove this variable and get it from an event handler
+
+  return startBrightcoveDI(createVideoEndpoint, file.name)
     .then(function(response) {
       // TODO: make this overrideable
       var defaultConfig = {
@@ -40,9 +49,9 @@ function uploadVideo(file, uploadUrl, signerUrl, ingestUrl) { // eslint-disable-
 
       var browserConfig = {
         file: file,
-        uploadUrl: uploadUrl,
-        signerUrl: signerUrl,
-        ingestUrl: ingestUrl
+        uploadUrl: createVideoEndpoint,
+        signerUrl: signUploadEndpoint,
+        ingestUrl: ingestUploadEndpoint,
       };
 
       // Merge config together
@@ -58,11 +67,11 @@ function uploadVideo(file, uploadUrl, signerUrl, ingestUrl) { // eslint-disable-
     });
 }
 
-uploadVideo.sha256 = function sha256(data) {
+BCUploader.sha256 = function sha256(data) {
   return new Hashes.SHA256().hex(data);
 };
 
-uploadVideo.md5 = function md5(data) {
+BCUploader.md5 = function md5(data) {
   return new Hashes.MD5().b64(data);
 };
 
@@ -139,4 +148,4 @@ function postJson(url, body) {
   });
 }
 
-module.exports = uploadVideo;
+module.exports = BCUploader;

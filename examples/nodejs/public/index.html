@@ -25,12 +25,13 @@
           return alert('No file selected.');
         }
 
-        BCUploader(file, "/upload", "/sign", "/ingest")
+        BCUploader({file:file, createVideoEndpoint:"/upload", signUploadEndpoint:"/sign", ingestUploadEndpoint:"/ingest"})
           .then(function() {
             alert("Uploaded video to DI push!");
           })
           .catch(function(err) {
-            alert("Error: " + err);
+            alert('Error! See console');
+            console.error(err);
           });
       };
     })();
