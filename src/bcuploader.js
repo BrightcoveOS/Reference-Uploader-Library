@@ -1,16 +1,8 @@
-var Evaporate = require('evaporate');
-var Hashes = require('jshashes');
-var AWS = require('aws-sdk');
+var ParamParser = require('./param-parser');
+var postJson = require('./post-json');
+var VideoUpload = require('./video-upload');
 
 var noop = function(){};
-
-function MissingParamError(param) {
-  this.name = 'MissingParamError';
-  this.message = 'A required parameter "' + param + '" was not provided in the constructor to BCUploader.';
-  // TODO: Add link to documentation in error message
-  this.stack = new Error().stack;
-}
-MissingParamError.prototype = Error.prototype;
 
 function BCUploader(params) {
   // Protect against forgetting the new keyword when instantiating objects
@@ -18,142 +10,51 @@ function BCUploader(params) {
     return new BCUploader(params);
   }
 
-  // Validate parameters
-  if (typeof params.createVideoEndpoint === 'undefined') throw new MissingParamError('createVideoEndpoint');
-  if (typeof params.signUploadEndpoint === 'undefined') throw new MissingParamError('signUploadEndpoint');
-  if (typeof params.ingestUploadEndpoint === 'undefined') throw new MissingParamError('ingestUploadEndpoint');
-  if (typeof params.root === 'undefined') throw new MissingParamError('root');
+  var param = ParamParser('BCUploader', params);
 
   // required parameters
-  this.createVideoEndpoint = params.createVideoEndpoint;
-  this.signUploadEndpoint = params.signUploadEndpoint;
-  this.ingestUploadEndpoint = params.ingestUploadEndpoint;
-  this.root = params.root;
+  this.createVideoEndpoint = param.required('createVideoEndpoint');
+  this.signUploadEndpoint = param.required('signUploadEndpoint');
+  this.ingestUploadEndpoint = param.required('ingestUploadEndpoint');
+  this.root = param.required('root');
 
   // optional callbacks
-  this.onProgress = params.onProgress || noop;
-  this.onStarted =  params.onStarted || noop;
-  this.onComplete =  params.onComplete || noop,
-  this.onUploadInitiated =  params.onUploadInitiated || noop;
-  this.onError =  params.onError || noop;
+  this.onProgress = param.optional('onProgress', noop);
+  this.onStarted =  param.optional('onStarted', noop);
+  this.onComplete =  param.optional('onComplete', noop);
+  this.onUploadInitiated =  param.optional('onUploadInitiated', noop);
+  this.onError =  param.optional('onError', noop);
 
-  setupDom(this);
+  // and so it begins...
+  this.setupDom();
 }
 
 BCUploader.prototype.createVideo = function createVideo(fileName) {
   return postJson(this.createVideoEndpoint, {name: fileName});
 };
 
-function setupDom(bcuploader) {
+BCUploader.prototype.setupDom = function setupDom() {
   var form = document.createElement('form');
   var fileInput = document.createElement('input');
   fileInput.type = 'file';
-  fileInput.onchange = function(event) {
-    onFileSelected(bcuploader, event);
-  };
+  fileInput.onchange = this.onFileSelected.bind(this);
   form.appendChild(fileInput);
-  document.getElementById(bcuploader.root).appendChild(form);
-}
+  document.getElementById(this.root).appendChild(form);
+};
 
-function onFileSelected(bcuploader, event) {
+BCUploader.prototype.onFileSelected = function onFileSelected(event) {
   // TODO: iterate over all selected files and trigger uploads
   var file = event.target.files[0];
+  var self = this;
 
-  return bcuploader.createVideo(file.name)
+  return self.createVideo(file.name)
     .then(function(response) {
-      // TODO: make this overrideable
-      var defaultConfig = {
-        onProgress: noop,
-        onStarted: noop,
-        onComplete: noop,
-        onUploadInitiated: noop,
-        onError: noop
-      };
-
-      var serverConfig = {
-        // AWS API entities
-        awsAccessKeyId: response.awsAccessKeyId,
-        bucket: response.bucket,
-        objectKey: response.objectKey,
-        region: response.region,
-
-        // Brightcove API entities
-        videoId: response.videoId,
-        accountId: response.accountId
-      };
-
-      var browserConfig = {
-        file: file,
-        uploadUrl: createVideoEndpoint,
-        signerUrl: signUploadEndpoint,
-        ingestUrl: ingestUploadEndpoint,
-      };
-
-      // Merge config together
-      config = Object.assign({}, defaultConfig, serverConfig, browserConfig);
-
-      return startS3Upload(config);
-    })
-    .then(function () {
-      return ingestAsset(config);
-    })
-    .then(function () {
-      return embedPlayer(config.accountId, config.videoId);
+      return new VideoUpload(file, response, self);
     });
-}
-
-BCUploader.sha256 = function sha256(data) {
-  return new Hashes.SHA256().hex(data);
 };
 
-BCUploader.md5 = function md5(data) {
-  return new Hashes.MD5().b64(data);
-};
 
-function startBrightcoveDI(uploadUrl, fileName) {
-  return new Promise(function(resolve, reject) {
-    return postJson(uploadUrl, {name: fileName})
-      .then(resolve)
-      .catch(reject);
-  });
-}
-
-function startS3Upload(config) {
-  return new Promise(function(resolve, reject) {
-    Evaporate.create({
-      signerUrl: config.signerUrl + '/' + config.videoId,
-      aws_key: config.awsAccessKeyId,
-      awsRegion: config.region,
-      bucket: config.bucket,
-      awsSignatureVersion: '4',
-      computeContentMd5: true,
-      cryptoMd5Method: function (data) { return AWS.util.crypto.md5(data, 'base64'); },
-      cryptoHexEncodedHash256: function (data) { return AWS.util.crypto.sha256(data, 'hex'); }
-    })
-    .then(function (evap) {
-      return evap.add({
-        name: config.objectKey,
-        file: config.file,
-        error: config.onError,
-        started: config.onStarted,
-        complete: config.onComplete,
-        uploadInitiated: config.onUploadInitiated,
-        progress: config.onProgress,
-      });
-    })
-    .then(resolve)
-    .catch(reject);
-  });
-}
-
-function ingestAsset(config) {
-  var ingestUrl = config.ingestUrl + '/' + config.videoId;
-  return postJson(ingestUrl, {
-    bucket: config.bucket,
-    objectKey: config.objectKey,
-  });
-}
-
+/*
 function embedPlayer(accountId, videoId) {
   return new Promise(function (resolve) {
     var iframe = document.createElement('div');
@@ -164,23 +65,6 @@ function embedPlayer(accountId, videoId) {
     resolve();
   });
 }
-
-function postJson(url, body) {
-  return new Promise(function(resolve, reject) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', url);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onreadystatechange = function() {
-      if (this.readyState === 4) {
-        if (this.status === 200) {
-          resolve(JSON.parse(this.response));
-        } else {
-          reject(this);
-        }
-      }
-    };
-    xhr.send(JSON.stringify(body));
-  });
-}
+*/
 
 module.exports = BCUploader;
