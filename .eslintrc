@@ -7,14 +7,15 @@
     "semi": [ "error", "always" ],
     "no-console": "warn",
     "no-debugger": "warn",
-    "arrow-spacing": "error"
+    "arrow-spacing": "error",
   },
   "env": {
     "browser": true,
+    "es6": true,
+    "commonjs": true,
   },
   "globals": {
-    "module": true,
-    "require": true,
-    "Promise": true
+    "BCUploader": true,
+    "expect": true,
   }
 }
