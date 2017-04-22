@@ -1,6 +1,8 @@
 var ParamParser = require('./param-parser');
 var postJson = require('./post-json');
 var VideoUpload = require('./video-upload');
+var UIRoot = require('./components/root');
+var UIVideo = require('./components/root');
 
 var noop = function(){};
 
@@ -25,46 +27,31 @@ function BCUploader(params) {
   this.onUploadInitiated =  param.optional('onUploadInitiated', noop);
   this.onError =  param.optional('onError', noop);
 
-  // and so it begins...
-  this.setupDom();
+  // optional UI config
+  this.landingText = param.optional('landingText', 'Drag Video Uploads Here');
+
+  // wire up the UI and wait for user interaction
+  this.rootEl = document.getElementById(this.root);
+  this.ui = new UIRoot({
+    landingText: this.landingText,
+    onFileSelected: (function(event) {
+      // TODO -- provide user callbacks to asynchronously validate the file selected
+      // TODO -- upload ALL file inputs
+      // TODO -- figure out how to create the UIVideo components...
+      this.createVideo(event.target.files[0]);
+    }).bind(this)
+  });
+  this.rootEl.innerHTML = '';
+  this.rootEl.appendChild(this.ui.render());
 }
 
-BCUploader.prototype.createVideo = function createVideo(fileName) {
-  return postJson(this.createVideoEndpoint, {name: fileName});
-};
-
-BCUploader.prototype.setupDom = function setupDom() {
-  var form = document.createElement('form');
-  var fileInput = document.createElement('input');
-  fileInput.type = 'file';
-  fileInput.onchange = this.onFileSelected.bind(this);
-  form.appendChild(fileInput);
-  document.getElementById(this.root).appendChild(form);
-};
-
-BCUploader.prototype.onFileSelected = function onFileSelected(event) {
-  // TODO: iterate over all selected files and trigger uploads
-  var file = event.target.files[0];
+BCUploader.prototype.createVideo = function createVideo(file) {
   var self = this;
 
-  return self.createVideo(file.name)
+  return postJson(this.createVideoEndpoint, {name: file.name})
     .then(function(response) {
       return new VideoUpload(file, response, self);
     });
 };
-
-
-/*
-function embedPlayer(accountId, videoId) {
-  return new Promise(function (resolve) {
-    var iframe = document.createElement('div');
-    iframe.innerHTML = '<iframe src="//players.brightcove.net/' + accountId + '/default_default/index.html?videoId=' + videoId + '" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>';
-    iframe.innerHTML += '<code>&lt;iframe src="//players.brightcove.net/' + accountId + '/default_default/index.html?videoId=' + videoId + '" allowfullscreen webkitallowfullscreen mozallowfullscreen&gt;&lt;/iframe&gt;';
-    iframe.innerHTML += '<a href="//players.brightcove.net/' + accountId + '/default_default/index.html?videoId=' + videoId + '">View in Player</a>';
-    document.getElementsByTagName('body')[0].appendChild(iframe);
-    resolve();
-  });
-}
-*/
 
 module.exports = BCUploader;
