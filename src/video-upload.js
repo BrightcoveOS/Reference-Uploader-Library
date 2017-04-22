@@ -3,6 +3,7 @@ var AWS = require('aws-sdk');
 
 var ParamParser = require('./param-parser');
 var postJson = require('./post-json');
+var UIVideo = require('./components/video');
 
 function VideoUpload(file, params, bcuploader) {
   // Protect against forgetting the new keyword when instantiating objects
@@ -25,6 +26,11 @@ function VideoUpload(file, params, bcuploader) {
   // Brightcove API entities
   this.videoId = param.required('videoId');
   this.accountId = param.required('accountId');
+
+  // Create UI element to represent upload
+  this.ui = new UIVideo({
+    name: file.name,
+  });
 
   // Start evaporating the file to S3
   this.startUpload();

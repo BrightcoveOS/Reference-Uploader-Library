@@ -2,7 +2,6 @@ var ParamParser = require('./param-parser');
 var postJson = require('./post-json');
 var VideoUpload = require('./video-upload');
 var UIRoot = require('./components/root');
-var UIVideo = require('./components/root');
 
 var noop = function(){};
 
@@ -50,7 +49,10 @@ BCUploader.prototype.createVideo = function createVideo(file) {
 
   return postJson(this.createVideoEndpoint, {name: file.name})
     .then(function(response) {
-      return new VideoUpload(file, response, self);
+      // TODO -- videoUpload shouldn't know anything about BCUploader
+      var video = new VideoUpload(file, response, self);
+      self.ui.addVideo(video.ui);
+      return video;
     });
 };
 
