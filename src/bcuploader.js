@@ -13,33 +13,53 @@ function MissingParamError(param) {
 MissingParamError.prototype = Error.prototype;
 
 function BCUploader(params) {
+  // Protect against forgetting the new keyword when instantiating objects
+  if (!(this instanceof BCUploader)) {
+    return new BCUploader(params);
+  }
+
+  // Validate parameters
   if (typeof params.createVideoEndpoint === 'undefined') throw new MissingParamError('createVideoEndpoint');
   if (typeof params.signUploadEndpoint === 'undefined') throw new MissingParamError('signUploadEndpoint');
   if (typeof params.ingestUploadEndpoint === 'undefined') throw new MissingParamError('ingestUploadEndpoint');
   if (typeof params.root === 'undefined') throw new MissingParamError('root');
 
+  // required parameters
   this.createVideoEndpoint = params.createVideoEndpoint;
   this.signUploadEndpoint = params.signUploadEndpoint;
   this.ingestUploadEndpoint = params.ingestUploadEndpoint;
   this.root = params.root;
 
+  // optional callbacks
+  this.onProgress = params.onProgress || noop;
+  this.onStarted =  params.onStarted || noop;
+  this.onComplete =  params.onComplete || noop,
+  this.onUploadInitiated =  params.onUploadInitiated || noop;
+  this.onError =  params.onError || noop;
+
   setupDom(this);
 }
+
+BCUploader.prototype.createVideo = function createVideo(fileName) {
+  return postJson(this.createVideoEndpoint, {name: fileName});
+};
 
 function setupDom(bcuploader) {
   var form = document.createElement('form');
   var fileInput = document.createElement('input');
   fileInput.type = 'file';
-  fileInput.onchange = function(evt) {
-    console.log(evt);
+  fileInput.onchange = function(event) {
+    onFileSelected(bcuploader, event);
   };
   form.appendChild(fileInput);
   document.getElementById(bcuploader.root).appendChild(form);
 }
 
-function foo() {
+function onFileSelected(bcuploader, event) {
+  // TODO: iterate over all selected files and trigger uploads
+  var file = event.target.files[0];
 
-  return startBrightcoveDI(createVideoEndpoint, file.name)
+  return bcuploader.createVideo(file.name)
     .then(function(response) {
       // TODO: make this overrideable
       var defaultConfig = {
