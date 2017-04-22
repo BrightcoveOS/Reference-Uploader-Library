@@ -5,9 +5,11 @@
   "main": "src/bcuploader.js",
   "scripts": {
     "build": "webpack",
+    "preexample": "npm run watch-bg",
     "example": "npm run build; cd examples/nodejs && npm start",
     "lint": "eslint --ext .js src",
-    "pretest": "npm run build",
+    "watch-bg": "webpack --watch &",
+    "pretest": "npm run watch-bg",
     "test": "karma start karma.conf.js",
     "pretravis": "npm run build",
     "travis": "karma start karma.conf.js --single-run"

@@ -12,30 +12,19 @@
   <div class="container">
     <h1>Sample Nodejs App</h1>
 
-    <input type="file" id="fileInput">
-    <p id="status">Please select a file</p>
+    <div id="bcuploader"></div>
 
-    <script src="/static/js/bcuploader.js"></script>
-    <script>
-    (function() {
-      document.getElementById("fileInput").onchange = function() {
-        var files = document.getElementById('fileInput').files;
-        var file = files[0];
-        if (file == null) {
-          return alert('No file selected.');
-        }
-
-        BCUploader({file:file, createVideoEndpoint:"/upload", signUploadEndpoint:"/sign", ingestUploadEndpoint:"/ingest"})
-          .then(function() {
-            alert("Uploaded video to DI push!");
-          })
-          .catch(function(err) {
-            alert('Error! See console');
-            console.error(err);
-          });
-      };
-    })();
+    <script type="text/javascript">
+      function init() {
+        BCUploader({
+          root: 'bcuploader',
+          createVideoEndpoint:"/upload",
+          signUploadEndpoint:"/sign",
+          ingestUploadEndpoint:"/ingest"
+        });
+      }
     </script>
+    <script src="/static/js/bcuploader.js" onload="init()"></script>
   </div>
 </body>
 </html>

@@ -13,16 +13,31 @@ function MissingParamError(param) {
 MissingParamError.prototype = Error.prototype;
 
 function BCUploader(params) {
-  var config;
-
   if (typeof params.createVideoEndpoint === 'undefined') throw new MissingParamError('createVideoEndpoint');
   if (typeof params.signUploadEndpoint === 'undefined') throw new MissingParamError('signUploadEndpoint');
   if (typeof params.ingestUploadEndpoint === 'undefined') throw new MissingParamError('ingestUploadEndpoint');
+  if (typeof params.root === 'undefined') throw new MissingParamError('root');
 
-  var createVideoEndpoint = params.createVideoEndpoint;
-  var signUploadEndpoint = params.signUploadEndpoint;
-  var ingestUploadEndpoint = params.ingestUploadEndpoint;
-  var file = params.file || {name:''}; // TODO: remove this variable and get it from an event handler
+  this.createVideoEndpoint = params.createVideoEndpoint;
+  this.signUploadEndpoint = params.signUploadEndpoint;
+  this.ingestUploadEndpoint = params.ingestUploadEndpoint;
+  this.root = params.root;
+
+  setupDom(this);
+}
+
+function setupDom(bcuploader) {
+  var form = document.createElement('form');
+  var fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.onchange = function(evt) {
+    console.log(evt);
+  };
+  form.appendChild(fileInput);
+  document.getElementById(bcuploader.root).appendChild(form);
+}
+
+function foo() {
 
   return startBrightcoveDI(createVideoEndpoint, file.name)
     .then(function(response) {
