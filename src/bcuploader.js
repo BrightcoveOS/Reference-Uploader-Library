@@ -41,6 +41,7 @@ function BCUploader(params) {
     previewText: param.optional('preivewText', 'Preview'),
     onPreview: param.optional('onPreview', noop),
     transcodingDelayMS: param.optional('transcodingDelayMS', 10000),
+    transcodingText: param.optional('transcodingText', 'Transcoding'),
   };
 
   // optional evaporate overrides

@@ -21,12 +21,16 @@ function UIRoot(params) {
 
 UIRoot.prototype.render = function render() {
   this.node.innerHTML = '';
-  this.node.classList.add('bcuploader-root');
+  this.node.className = 'bcuploader-root';
 
   this.node.appendChild(this.landing.render());
+
+  var videoContainer = document.createElement('div');
+  videoContainer.className = 'bcuploader-video-container';
   this.videos.forEach((function(video) {
-    this.node.appendChild(video.render());
+    videoContainer.appendChild(video.render());
   }).bind(this));
+  this.node.appendChild(videoContainer);
 
   return this.node;
 };

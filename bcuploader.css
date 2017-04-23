@@ -1,0 +1,22 @@
+.bcuploader-root {}
+
+.bcuploader-video,
+.bcuploader-landing {background-color: #f7f7f9; border: 1px solid #e1e1e8; border-radius: 4px; padding: 30px; max-width: 400px; margin: auto; text-align: center;}
+.bcuploader-landing_heading {display: block; font-size: 2em; margin-bottom: 15px;}
+.bcuploader-landing_file-input {display: block;margin: auto;}
+
+.bcuploader-video-container {display: block; margin-top: 15px;}
+
+.bcuploader-video {position: relative; padding-top:10px; padding-bottom:10px; margin-bottom: 15px;  text-align: right;}
+.bcuploader-video:after {content: ""; display: table; clear: both;}
+.bcuploader-video.is-pending {}
+.bcuploader-video.is-started {}
+.bcuploader-video.is-transcoding {}
+.bcuploader-video.is-preview {}
+.bcuploader-video.is-error {color: #a94442; background-color: #f2dede; border-color: #ebccd1;}
+
+.bcuploader-video_file-name {position: relative; z-index:1; display: block; float: left;  text-align: left;}
+
+.bcuploader-video_label {position: relative; z-index:1;}
+.is-preview .bcuploader-video_label {cursor: pointer; color: blue;}
+.bcuploader-video_progress-bar {height: 100%; background-color:#5d9fde; position: absolute; left:0; z-index:0; top:0; border-radius: 4px; }

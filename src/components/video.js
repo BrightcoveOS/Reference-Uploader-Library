@@ -22,6 +22,7 @@ function UIVideo(params) {
   this.name = params.name || '[Unnamed video upload]';
   this.state = uiStates.pending;
   this.percent = 0;
+  this.transcodingText = params.transcodingText;
   this.transcodingDelayMS = params.transcodingDelayMS;
   this.previewText = params.previewText;
   this.onPreview = params.onPreview;
@@ -36,27 +37,28 @@ UIVideo.prototype.render = function render() {
   this.node.className = 'bcuploader-video is-' + this.state;
 
   var fileName = document.createElement('span');
-  fileName.classList.add('bcuploader-video_file-name');
+  fileName.className = 'bcuploader-video_file-name';
   fileName.innerHTML = this.name;
   this.node.appendChild(fileName);
 
   var label = document.createElement('span');
+  label.className = 'bcuploader-video_label';
   switch (this.state) {
     case this.states.progress:
-      label.classList.add('bcuploader-video_percent');
+      var progressBar = document.createElement('span');
+      progressBar.style.width = this.percent + '%';
+      progressBar.className = 'bcuploader-video_progress-bar';
+      this.node.appendChild(progressBar);
       label.innerHTML = this.percent + '%';
       break;
     case this.states.transcoding:
-      label.classList.add('bcuploader-video_transcoding');
-      label.innerHTML = 'Transcoding';
+      label.innerHTML = this.transcodingText;
       break;
     case this.states.preview:
-      label.classList.add('bcuploader-video_preview');
       label.onclick = this.onPreview;
       label.innerHTML = this.previewText;
       break;
     case this.states.error:
-      label.classList.add('bcuploader-video_error');
       label.innerHTML = 'Error';
       break;
   }
