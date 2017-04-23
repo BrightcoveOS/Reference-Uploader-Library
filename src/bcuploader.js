@@ -36,7 +36,15 @@ function BCUploader(params) {
   };
 
   // optional UI config
-  this.landingText = param.optional('landingText', 'Drag Video Uploads Here');
+  this.landingText = param.optional('landingText', 'Drag Video Uploads Here'),
+  this.videoUI = {
+    previewText: param.optional('preivewText', 'Preview'),
+    onPreview: param.optional('onPreview', noop),
+    transcodingDelayMS: param.optional('transcodingDelayMS', 10000),
+  };
+
+  // optional evaporate overrides
+  this.overrides = param.optional('evaporate', {});
 
   // wire up the UI and wait for user interaction
   this.setupUI();
@@ -66,7 +74,11 @@ BCUploader.prototype.createVideo = function createVideo(file) {
   var self = this;
   return postJson(this.urls.createVideoEndpoint, {name: file.name})
     .then(function(response) {
-      var params = Object.assign({file: file}, response, self.callbacks, self.urls);
+      var params = Object.assign(response, self.callbacks, self.urls, {
+        file: file,
+        ui: self.videoUI,
+        overrides: self.overrides
+      });
       var video = new VideoUpload(params);
       self.ui.addVideo(video.ui);
       return video;

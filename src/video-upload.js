@@ -28,10 +28,14 @@ function VideoUpload(params) {
   this.signerUrl = param.required('signUploadEndpoint') + '/' + this.videoId;
   this.ingestUrl = param.required('ingestUploadEndpoint') + '/' + this.videoId;
 
+  // Configure misc Evaporate options
+  this.overrides = param.optional('overrides', {});
+
   // Create UI element to represent upload
-  this.ui = new UIVideo({
+  this.completed = false;
+  this.ui = new UIVideo(Object.assign(params.ui, {
     name: this.file.name,
-  });
+  }));
 
   // Callbacks -- should be defaulted in BCUploader
   // TODO -- hook these all events up to UIVideo
@@ -47,7 +51,7 @@ function VideoUpload(params) {
 }
 
 VideoUpload.prototype.prepareUpload = function prepareUpload() {
-  return Evaporate.create({
+  return Evaporate.create(Object.assign({
     signerUrl: this.signerUrl,
     region: this.region,
     aws_key: this.awsAccessKeyId,
@@ -55,21 +59,48 @@ VideoUpload.prototype.prepareUpload = function prepareUpload() {
     bucket: this.bucket,
     awsSignatureVersion: '4',
     computeContentMd5: true,
+    logging: this.logging,
     cryptoMd5Method: function (data) { return AWS.util.crypto.md5(data, 'base64'); },
     cryptoHexEncodedHash256: function (data) { return AWS.util.crypto.sha256(data, 'hex'); },
-  })
+  }, this.overrides))
   .then(this.startUpload.bind(this));
+};
+
+VideoUpload.prototype.started = function started() {
+  this.ui.setState(this.ui.states.started);
+  this.onStarted.apply(this, arguments);
+};
+
+VideoUpload.prototype.progress = function progress(percent) {
+  // TODO -- expose the transfer speed stats somehow
+  // FYI -- Evaporate calls onProgress AGAIN after calling onComplete :doh:
+  if (!this.completed) {
+    percent = Math.floor(percent * 100);
+    this.ui.setState(this.ui.states.progress, percent);
+    this.onProgress.apply(this, arguments);
+  }
+};
+
+VideoUpload.prototype.complete = function complete() {
+  this.completed = true;
+  this.ui.setState(this.ui.states.transcoding);
+  this.onCompleted.apply(this, arguments);
+};
+
+VideoUpload.prototype.error = function error() {
+  this.ui.setState(this.ui.states.error);
+  this.onError.apply(this, arguments);
 };
 
 VideoUpload.prototype.startUpload = function startUpload(evap) {
   evap.add({
     name: this.objectKey,
     file: this.file,
-    error: this.onError,
-    started: this.onStarted,
-    complete: this.onCompleted,
+    error: this.error.bind(this),
+    started: this.started.bind(this),
+    complete: this.complete.bind(this),
     uploadInitiated: this.onUploadInitiated,
-    progress: this.onProgress,
+    progress: this.progress.bind(this),
   })
   .then(this.ingest.bind(this));
 };
