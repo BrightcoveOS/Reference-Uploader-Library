@@ -1,8 +1,8 @@
-Brightcove Uploader [![Build Status](https://travis-ci.org/brycefisher/bcuploader.svg?branch=master)](https://travis-ci.org/brycefisher/bcuploader)
+Evaporate Brightcove [![Build Status](https://travis-ci.org/brycefisher/bcuploader.svg?branch=master)](https://travis-ci.org/brycefisher/bcuploader)
 -------------------
 
-> Frontend module to start ingesting content from end-user; sample code for the backend
+> Frontend module for direct multipart upload to s3 with secret sauce for Brightcove ingest
 
-Check out the wireframes in [/design](https://github.com/brycefisher/bcuploader/tree/master/design/).
+![](/upload-all-states.png)
 
-**This module is under active development.**
+
