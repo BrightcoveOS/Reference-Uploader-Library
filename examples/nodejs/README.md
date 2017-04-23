@@ -23,4 +23,4 @@ npm install
 npm start
 ```
 
-Navigate to [localhost:3000](http://localhost:300/) to see Videogram in action.
+Navigate to [localhost:3000](http://localhost:300/) to see Brightcove Evaporate in action.
