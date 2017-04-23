@@ -5,11 +5,7 @@
 Requirements:
 
  * a compatible version of node (current LTS)
- * a `.env` file with credentials to Brightcove APIs and AWS S3
-
-### Installing Node
-
-Use the dmg to install a compatible [version of node](https://nodejs.org/dist/v6.10.2/node-v6.10.2.pkg).
+ * copy `.env-sample` file in this directory to `.env` and replace all the values with your [Brightcove](https://support.brightcove.com/en/video-cloud/docs/managing-api-authentication-credentials) and AWS credentials
 
 Next install the node dependencies:
 
