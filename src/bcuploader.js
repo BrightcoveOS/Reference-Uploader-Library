@@ -14,43 +14,60 @@ function BCUploader(params) {
   var param = ParamParser('BCUploader', params);
 
   // required parameters
-  this.createVideoEndpoint = param.required('createVideoEndpoint');
-  this.signUploadEndpoint = param.required('signUploadEndpoint');
-  this.ingestUploadEndpoint = param.required('ingestUploadEndpoint');
+  this.urls = {
+    createVideoEndpoint: param.required('createVideoEndpoint'),
+    signUploadEndpoint: param.required('signUploadEndpoint'),
+    ingestUploadEndpoint: param.required('ingestUploadEndpoint'),
+  },
   this.root = param.required('root');
 
   // optional callbacks
-  this.onProgress = param.optional('onProgress', noop);
-  this.onStarted =  param.optional('onStarted', noop);
-  this.onComplete =  param.optional('onComplete', noop);
-  this.onUploadInitiated =  param.optional('onUploadInitiated', noop);
-  this.onError =  param.optional('onError', noop);
+  this.callbacks = {
+    onProgress: param.optional('onProgress', noop),
+    onStarted:  param.optional('onStarted', noop),
+    onComplete:  param.optional('onComplete', noop),
+    onUploadInitiated:  param.optional('onUploadInitiated', noop),
+    onError:  param.optional('onError', noop),
+
+    // onFileSelected MUST be a promise
+    onFileSelected: param.optional('onFileSelected', function() {
+      return Promise.resolve();
+    }),
+  };
 
   // optional UI config
   this.landingText = param.optional('landingText', 'Drag Video Uploads Here');
 
   // wire up the UI and wait for user interaction
+  this.setupUI();
+}
+
+BCUploader.prototype.setupUI = function setupUI() {
+  var self = this;
   this.rootEl = document.getElementById(this.root);
   this.ui = new UIRoot({
     landingText: this.landingText,
-    onFileSelected: (function(event) {
-      // TODO -- provide user callbacks to asynchronously validate the file selected
-      // TODO -- upload ALL file inputs
-      // TODO -- figure out how to create the UIVideo components...
-      this.createVideo(event.target.files[0]);
-    }).bind(this)
+    onFileSelected: function(file) {
+      self.callbacks.onFileSelected(file).then(function() {
+        self.createVideo(file);
+      });
+    },
   });
+
+  this.render();
+};
+
+BCUploader.prototype.render = function render() {
   this.rootEl.innerHTML = '';
   this.rootEl.appendChild(this.ui.render());
-}
+};
 
 BCUploader.prototype.createVideo = function createVideo(file) {
   var self = this;
-
-  return postJson(this.createVideoEndpoint, {name: file.name})
+  return postJson(this.urls.createVideoEndpoint, {name: file.name})
     .then(function(response) {
-      // TODO -- videoUpload shouldn't know anything about BCUploader
-      var video = new VideoUpload(file, response, self);
+      var params = Object.assign({file: file}, response, self.callbacks, self.urls);
+      var video = new VideoUpload(params);
       self.ui.addVideo(video.ui);
       return video;
     });
