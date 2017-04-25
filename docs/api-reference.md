@@ -105,4 +105,15 @@ router.get('/ingest/:videoId', function(req, res) {
 
 ### Optional Parameters
 
-####
+#### previewText (string)
+#### onPreview (function)
+#### landingText (string)
+#### transcodingDelayMS (number)
+#### transcodingText (number)
+#### onProgress (function)
+#### onStarted (function)
+#### onComplete (function)
+#### onUploadInitiated (function)
+#### onFileSelected (function)
+#### onError (function)
+#### evaporate (object)
