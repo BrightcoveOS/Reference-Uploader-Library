@@ -1,6 +1,12 @@
 /* eslint-env mocha */
 
 describe('BCUploader constructor', function() {
+  before(function() {
+    var rootEl = document.createElement('div');
+    rootEl.id = 'root-id';
+    document.querySelector('body').appendChild(rootEl);
+  });
+
   it('exists', function() {
     expect(BCUploader).to.be.a('function');
   });
@@ -18,7 +24,8 @@ describe('BCUploader constructor', function() {
     expect(function() {
       BCUploader({
         ingestUploadEndpoint: 'bar',
-        signUploadEndpoint: 'bar'
+        signUploadEndpoint: 'bar',
+        root: 'root-id',
       });
     }).to.throw(/createVideoEndpoint/);
   });
@@ -27,7 +34,8 @@ describe('BCUploader constructor', function() {
     expect(function() {
       BCUploader({
         createVideoEndpoint: 'bar',
-        signUploadEndpoint: 'bar'
+        signUploadEndpoint: 'bar',
+        root: 'root-id',
       });
     }).to.throw(/ingestUploadEndpoint/);
   });
@@ -38,6 +46,7 @@ describe('BCUploader constructor', function() {
         createVideoEndpoint: 'bar',
         signUploadEndpoint: 'bar',
         ingestUploadEndpoint: 'bar',
+        root: 'root-id',
       });
     }).not.to.throw();
   });
