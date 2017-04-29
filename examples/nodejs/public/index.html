@@ -10,9 +10,16 @@
   <link rel="stylesheet" href="/static/js/bcuploader.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <style>
+  #example-script {
+    display: block;
+    white-space: pre;
+    position: relative;
+    top: -1em;
+    left: -1em;
+  }
+
   @media screen and (min-width: 750px) {
     .bcuploader-landing {
-      max-width: 50vw;
       padding: 6em;
       margin-top: 3em;
     }
@@ -33,7 +40,31 @@
 
     <p>See the <a href="https://github.com/BrightcoveOS/evaporate-brightcove">Quick Start Guide</a> to start using Evaporate Brightcove in your project!</p>
 
-    <div id="bcuploader"></div>
+    <div class="panel panel-primary" style="margin: 2em 0;">
+      <div class="panel-heading">
+        <h2 class="panel-title">Working Demo</h2>
+      </div>
+      <div class="row panel-body">
+        <div class="col-md-3">
+            <h4 class="panel-heading">Source Code</h4>
+            <script type="text/javascript" id="example-script">
+              function init() {
+                BCUploader({
+                  root: 'bcuploader',
+                  createVideoEndpoint:"/upload",
+                  signUploadEndpoint:"/sign",
+                  ingestUploadEndpoint:"/ingest"
+                });
+              }
+            </script>
+        </div>
+
+        <div class="col-md-9">
+          <div id="bcuploader"></div>
+        </div>
+      </div>
+    </div>
+
 
     <h3>Features</h3>
     <ul style="column-width: 300px; column-gap: 2em;">
@@ -67,16 +98,6 @@
       </li>
     </ul>
 
-    <script type="text/javascript">
-      function init() {
-        BCUploader({
-          root: 'bcuploader',
-          createVideoEndpoint:"/upload",
-          signUploadEndpoint:"/sign",
-          ingestUploadEndpoint:"/ingest"
-        });
-      }
-    </script>
     <script src="/static/js/bcuploader.js" onload="init()"></script>
   </div>
 </body>
