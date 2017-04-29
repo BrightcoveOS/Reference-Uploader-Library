@@ -7,7 +7,7 @@ function MissingParamError(where, param) {
 MissingParamError.prototype = Error.prototype;
 
 function ParamParser(where, params) {
-  var isUndefined = (param) => typeof params[param] === 'undefined';
+  var isUndefined = function (param) { return typeof params[param] === 'undefined'; };
 
   return {
     required: function(param) {

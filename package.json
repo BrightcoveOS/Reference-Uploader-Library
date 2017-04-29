@@ -5,7 +5,7 @@
   "main": "src/bcuploader.js",
   "scripts": {
     "lint": "eslint --ext .js src",
-    "webpack:build": "webpack",
+    "webpack:build": "webpack -p",
     "webpack:watch": "webpack --watch &",
     "example": "cd examples/nodejs && npm start",
 
