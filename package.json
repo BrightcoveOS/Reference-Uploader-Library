@@ -32,7 +32,6 @@
     "url": "https://github.com/BrightcoveOS/evaporate-brightcove.git"
   },
   "dependencies": {
-    "aws-sdk": "^2.38.0",
     "buffer": "^5.0.6",
     "crypto-browserify": "^3.11.0",
     "evaporate": "^2.1.0",
