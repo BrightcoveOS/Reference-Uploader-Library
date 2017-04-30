@@ -15,7 +15,9 @@ function sha256(data) {
 function _hash(algorithm, data, digest) {
   var hash = crypto.createHash(algorithm);
 
-  if (typeof data === 'string') { data = new Buffer(data); }
+  if (typeof data === 'string') {
+    data = new Buffer(data);
+  }
   var isBuffer = Buffer.isBuffer(data);
 
   //Identifying objects with an ArrayBuffer as buffers
@@ -26,8 +28,8 @@ function _hash(algorithm, data, digest) {
   if (typeof data === 'object' && !isBuffer) {
     data = new Buffer(new Uint8Array(data));
   }
-  var out = hash.update(data).digest(digest);
-  return out;
+
+  return hash.update(data).digest(digest);
 }
 
 module.exports = {
