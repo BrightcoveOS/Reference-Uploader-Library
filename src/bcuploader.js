@@ -36,10 +36,12 @@ function BCUploader(params) {
   };
 
   // optional UI config
-  this.landingText = param.optional('landingText', 'Drag Video Uploads Here'),
+  this.landingText = param.optional('landingText', 'Drag Video Uploads Here');
+  var previewPlayerId = param.optional('previewPlayerId', null);
   this.videoUI = {
-    previewText: param.optional('preivewText', 'Preview'),
+    previewText: param.optional('preivewText', previewPlayerId ? 'Preview' : ''),
     onPreview: param.optional('onPreview', noop),
+    previewPlayerId: previewPlayerId,
     transcodingDelayMS: param.optional('transcodingDelayMS', 10000),
     transcodingText: param.optional('transcodingText', 'Transcoding'),
   };
