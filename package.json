@@ -8,19 +8,14 @@
     "webpack:build": "webpack -p",
     "webpack:watch": "webpack --watch &",
     "example": "cd examples/nodejs && npm start",
-
     "prestart": "npm run webpack:build",
     "start": "npm run example",
-
     "prewatch": "npm run webpack:watch",
     "watch": "npm run example",
-
     "pretest": "npm run webpack:watch",
     "test": "karma start karma.conf.js",
-
     "pretravis": "npm run webpack:build",
     "travis": "karma start karma.conf.js --single-run",
-
     "preheroku": "cd examples/nodejs && npm install",
     "heroku": "npm start"
   },
@@ -38,6 +33,8 @@
   },
   "dependencies": {
     "aws-sdk": "^2.38.0",
+    "buffer": "^5.0.6",
+    "crypto-browserify": "^3.11.0",
     "evaporate": "^2.1.0",
     "webpack": "^2.3.3"
   },

@@ -1,6 +1,7 @@
 var Evaporate = require('evaporate');
-var AWS = require('aws-sdk');
 
+var md5 = require('./crypto').md5;
+var sha256 = require('./crypto').sha256;
 var ParamParser = require('./param-parser');
 var postJson = require('./post-json');
 var UIVideo = require('./components/video');
@@ -59,9 +60,9 @@ VideoUpload.prototype.prepareUpload = function prepareUpload() {
     bucket: this.bucket,
     awsSignatureVersion: '4',
     computeContentMd5: true,
-    logging: this.logging,
-    cryptoMd5Method: function (data) { return AWS.util.crypto.md5(data, 'base64'); },
-    cryptoHexEncodedHash256: function (data) { return AWS.util.crypto.sha256(data, 'hex'); },
+    logging: this.logging, // TODO -- fix this option!
+    cryptoMd5Method: md5,
+    cryptoHexEncodedHash256: sha256,
   }, this.overrides))
   .then(this.startUpload.bind(this));
 };
