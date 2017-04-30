@@ -117,6 +117,53 @@ router.get('/ingest/:videoId', function(req, res) {
 
 > Callback which is invoked when Preview link is clicked
 
+If a `previewPlayerId` is provided to BCUploader, the default implementation will
+creating a player over the Drag n' Drop landing area and try to playback the video.
+
+NOTE: At this time, there is no way for BCUploader to know if a transcode is actually
+complete, so it's entirely possible this will be a suboptimal experience for the user.
+
+Use `transcodeDelayMS` to tune the default wait time before showing the preview link.
+
+ * See the default implementation at [src/components/default-preview.js](../src/components/default-preview.js)
+ * Callback is called with "context" object having these properties:
+   * `defaultPreviewAction` (function) - see link above. Useful for using the default but adding tracking code or firing other events on the rest of the page.
+   * `videoId` (number) - Brightcove Video ID. Useful for constructing a player, among other things
+   * `fileName` (string) - file name from the original file upload
+   * `fileSize` (number) - the number of bytes for the upload
+   * `previewPlayerId` (number) - the `previewPlayerId` possibly provided to BCUploader constructor
+
+Example:
+
+```js
+<script>
+BCUploader({
+  previewPlayerId: 1234567890,
+  onPreview: function(context) {
+    console.log(context.previewPlayerId); // 1234567890
+    console.log(context.videoId);         // 2345678910
+    console.log(context.fileName);         // "cats.mp4"
+    console.log(context.fileSize);         // 90654201
+    context.defaultPreviewAction(context); // Perform the default preview
+  },
+  // ...
+});
+</script>
+```
+
+---
+
+#### previewPlayerId (number)
+
+> Brightcove player ID for use in previewing a video after transcode
+
+If provided, a video preview happens by default using this player. This player ID will be
+passed to the onPreview callback as part of the context.
+
+If not provided, no preview is available after the transcoding is complete.
+
+ * Default: null
+
 ---
 
 #### landingText (string)
