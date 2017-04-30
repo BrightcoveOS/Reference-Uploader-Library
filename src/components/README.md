@@ -58,7 +58,3 @@ the component to be updated. Calling `render()` on root causes all its
 child components to be rendered.
 
  * returns: DOM node
-
-### `dispose()`
-
-Causes the component to deregister all event handlers and remove itself from the DOM.
