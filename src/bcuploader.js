@@ -2,6 +2,7 @@ var ParamParser = require('./param-parser');
 var postJson = require('./post-json');
 var VideoUpload = require('./video-upload');
 var UIRoot = require('./components/root');
+var defaultPreviewAction = require('./components/default-preview').defaultPreviewAction;
 
 var noop = function(){};
 
@@ -35,27 +36,28 @@ function BCUploader(params) {
     }),
   };
 
-  // optional UI config
+  // wire up the UI and wait for user interaction
   this.landingText = param.optional('landingText', 'Drag Video Uploads Here');
+  this.setupUI();
+
+  // optional UI config
   var previewPlayerId = param.optional('previewPlayerId', null);
   this.videoUI = {
     previewText: param.optional('preivewText', previewPlayerId ? 'Preview' : ''),
-    onPreview: param.optional('onPreview', noop),
+    onPreview: param.optional('onPreview', defaultPreviewAction),
     previewPlayerId: previewPlayerId,
+    rootElement: this.rootElement,
     transcodingDelayMS: param.optional('transcodingDelayMS', 10000),
     transcodingText: param.optional('transcodingText', 'Transcoding'),
   };
 
   // optional evaporate overrides
   this.overrides = param.optional('evaporate', {});
-
-  // wire up the UI and wait for user interaction
-  this.setupUI();
 }
 
 BCUploader.prototype.setupUI = function setupUI() {
   var self = this;
-  this.rootEl = document.getElementById(this.root);
+  this.rootElement = document.getElementById(this.root);
   this.ui = new UIRoot({
     landingText: this.landingText,
     onFileSelected: function(file) {
@@ -69,8 +71,8 @@ BCUploader.prototype.setupUI = function setupUI() {
 };
 
 BCUploader.prototype.render = function render() {
-  this.rootEl.innerHTML = '';
-  this.rootEl.appendChild(this.ui.render());
+  this.rootElement.innerHTML = '';
+  this.rootElement.appendChild(this.ui.render());
 };
 
 BCUploader.prototype.createVideo = function createVideo(file) {

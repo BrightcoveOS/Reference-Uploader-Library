@@ -4,6 +4,8 @@
 // This components communicates progress on a single video upload to the user. It's the single most complex
 // visual component.
 
+var defaultPreviewAction = require('./default-preview').defaultPreviewAction;
+
 var uiStates = {
   'pending': 'pending',
   'started': 'started',
@@ -19,13 +21,23 @@ function UIVideo(params) {
     return new UIVideo(params);
   }
 
-  this.name = params.name || '[Unnamed video upload]';
   this.state = uiStates.pending;
   this.percent = 0;
+  this.fileName = params.fileName;
+
   this.transcodingText = params.transcodingText;
   this.transcodingDelayMS = params.transcodingDelayMS;
+
   this.previewText = params.previewText;
   this.onPreview = params.onPreview;
+  this.previewContext = {
+    fileName: params.fileName,
+    fileSize: params.fileSize,
+    previewPlayerId: params.previewPlayerId, // Maybe null!
+    defaultPreviewAction: defaultPreviewAction,
+    videoId: params.videoId,
+    rootElement: params.rootElement
+  };
 
   this.node = document.createElement('div');
 }
@@ -38,7 +50,7 @@ UIVideo.prototype.render = function render() {
 
   var fileName = document.createElement('span');
   fileName.className = 'bcuploader-video_file-name';
-  fileName.innerHTML = this.name;
+  fileName.innerHTML = this.fileName;
   this.node.appendChild(fileName);
 
   var label = document.createElement('span');
@@ -55,7 +67,7 @@ UIVideo.prototype.render = function render() {
       label.innerHTML = this.transcodingText;
       break;
     case this.states.preview:
-      label.onclick = this.onPreview;
+      label.onclick = this.onclick.bind(this);
       label.innerHTML = this.previewText;
       break;
     case this.states.error:
@@ -89,6 +101,11 @@ UIVideo.prototype.setState = function setState(state, percent) {
   }
 
   this.render();
+};
+
+UIVideo.prototype.onclick = function onclick(event) {
+  var context = Object.assign({}, this.previewContext, {event: event});
+  this.onPreview(context);
 };
 
 module.exports = UIVideo;

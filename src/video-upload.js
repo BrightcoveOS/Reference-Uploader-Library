@@ -35,7 +35,9 @@ function VideoUpload(params) {
   // Create UI element to represent upload
   this.completed = false;
   this.ui = new UIVideo(Object.assign(params.ui, {
-    name: this.file.name,
+    fileName: this.file.name,
+    fileSize: this.file.size,
+    videoId: this.videoId
   }));
 
   // Callbacks -- should be defaulted in BCUploader
