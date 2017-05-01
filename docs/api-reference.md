@@ -126,12 +126,16 @@ complete, so it's entirely possible this will be a suboptimal experience for the
 Use `transcodeDelayMS` to tune the default wait time before showing the preview link.
 
  * See the default implementation at [src/components/default-preview.js](../src/components/default-preview.js)
+ * See the lower level updatePreview() implementation at [src/components/preview.js](../src/components/preview.js)
  * Callback is called with "context" object having these properties:
    * `defaultPreviewAction` (function) - see link above. Useful for using the default but adding tracking code or firing other events on the rest of the page.
+   * `updatePreview` (function) - allows you use the builtin preview function but provide different videoId, accountId, or playerId
+   * `rootElement` (DOM node) - useful for direct manipulation of DOM if you want to forego the builtin preview functionality
    * `videoId` (number) - Brightcove Video ID. Useful for constructing a player, among other things
+   * `accountId` (number) - Brightcove account ID. Useful for constructing a player, among other things
+   * `playerId` (string) - the `playerId` possibly provided to BCUploader constructor
    * `fileName` (string) - file name from the original file upload
    * `fileSize` (number) - the number of bytes for the upload
-   * `playerId` (number) - the `playerId` possibly provided to BCUploader constructor
 
 Example:
 
@@ -140,11 +144,14 @@ Example:
 BCUploader({
   playerId: 1234567890,
   onPreview: function(context) {
-    console.log(context.playerId); // 1234567890
-    console.log(context.videoId);         // 2345678910
+    console.log(context.playerId);         // Hy9fawLj43
+    console.log(context.videoId);          // 2345678001
+    console.log(context.accountId);        // 3456789100112
     console.log(context.fileName);         // "cats.mp4"
     console.log(context.fileSize);         // 90654201
-    context.defaultPreviewAction(context); // Perform the default preview
+    console.log(context.rootElement);      // <DOM node for the root of the BCUploader instance>
+    context.updatePreview({videoId:23456, playerId: 'default', accountId: '12345'}); // Renders default preview in default preview DOM element
+    context.defaultPreviewAction(context); // Performs the default preview
   },
   // ...
 });
@@ -157,12 +164,10 @@ BCUploader({
 
 > Brightcove player ID for use in previewing a video after transcode
 
-If provided, a video preview happens by default using this player. This player ID will be
-passed to the onPreview callback as part of the context.
+This player ID will be passed to the onPreview callback as part of the context. If not provided,
+the default player for the account is used.
 
-If not provided, no preview is available after the transcoding is complete.
-
- * Default: null
+ * Default: 'default'
 
 ---
 
@@ -178,7 +183,8 @@ If not provided, no preview is available after the transcoding is complete.
 
 > Milliseconds to wait for transcoding to finish
 
-For simplicity, we don't actually check to see if the transcoding is complete; instead we just upload the UI optimistically after a certain amount of time.
+For simplicity, we don't actually check to see if the transcoding is complete; instead we just update
+the UI optimistically after a certain amount of time.
 
  * Default: 5000
 
