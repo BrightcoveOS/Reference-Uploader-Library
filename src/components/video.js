@@ -33,7 +33,8 @@ function UIVideo(params) {
   this.previewContext = {
     fileName: params.fileName,
     fileSize: params.fileSize,
-    previewPlayerId: params.previewPlayerId, // Maybe null!
+    playerId: params.playerId, // Maybe null!
+    updatePreview: params.updatePreview,
     defaultPreviewAction: defaultPreviewAction,
     videoId: params.videoId,
     accountId: params.accountId,
