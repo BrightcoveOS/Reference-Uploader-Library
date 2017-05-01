@@ -41,11 +41,10 @@ function BCUploader(params) {
   this.setupUI();
 
   // optional UI config
-  var previewPlayerId = param.optional('previewPlayerId', null);
   this.videoUI = {
-    previewText: param.optional('preivewText', previewPlayerId ? 'Preview' : ''),
+    previewText: param.optional('preivewText', 'Preview'),
     onPreview: param.optional('onPreview', defaultPreviewAction),
-    previewPlayerId: previewPlayerId,
+    previewPlayerId: param.optional('previewPlayerId', 'default'),
     rootElement: this.rootElement,
     transcodingDelayMS: param.optional('transcodingDelayMS', 10000),
     transcodingText: param.optional('transcodingText', 'Transcoding'),
