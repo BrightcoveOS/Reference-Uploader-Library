@@ -40,9 +40,10 @@ function BCUploader(params) {
   this.landingText = param.optional('landingText', 'Drag Video Uploads Here');
   this.setupUI();
 
-  // optional UI config
+  // Video UI config
   this.videoUI = {
     previewText: param.optional('preivewText', 'Preview'),
+    preview: this.root.preview,
     onPreview: param.optional('onPreview', defaultPreviewAction),
     previewPlayerId: param.optional('previewPlayerId', 'default'),
     rootElement: this.rootElement,

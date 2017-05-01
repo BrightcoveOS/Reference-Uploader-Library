@@ -4,6 +4,7 @@
 // This class is a container for the other UI components. UIRoot tells this class what to render and where.
 
 var UILanding = require('./landing');
+var UIPreview = require('./preview');
 
 function UIRoot(params) {
   // Protect against forgetting the new keyword when instantiating objects
@@ -16,6 +17,7 @@ function UIRoot(params) {
     text: params.landingText,
     onFileSelected: params.onFileSelected,
   });
+  this.preview = new UIPreview({});
   this.videos = [];
 }
 
@@ -23,6 +25,7 @@ UIRoot.prototype.render = function render() {
   this.node.innerHTML = '';
   this.node.className = 'bcuploader-root';
 
+  this.node.appendChild(this.preview.render());
   this.node.appendChild(this.landing.render());
 
   var videoContainer = document.createElement('div');
