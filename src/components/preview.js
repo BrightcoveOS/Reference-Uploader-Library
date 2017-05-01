@@ -28,8 +28,14 @@ UIPreview.prototype.render = function render() {
   this.node.className = 'bcuploader-preview is-' + this.state;
 
   if (this.state === 'shown') {
-    var playerUrl = '//players.brightcove.net/' + this.accountId + '/' + this.playerId + '_default/index.html?videoId=' + this.videoId;
-    this.node.innerHTML = '<iframe src="' + playerUrl + '" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>';
+    var overlay = document.createElement('div');
+    overlay.className = 'bcuploader-preview_overlay';
+    this.node.appendChild(overlay);
+
+    var iframe = document.createElement('iframe');
+    iframe.className = 'bcuploader-preview_player';
+    iframe.src = '//players.brightcove.net/' + this.accountId + '/' + this.playerId + '_default/index.html?videoId=' + this.videoId;
+    this.node.appendChild(iframe);
 
     var closeButton = document.createElement('span');
     closeButton.className = 'bcuploader-preview_close-button';
