@@ -37,7 +37,8 @@ function VideoUpload(params) {
   this.ui = new UIVideo(Object.assign(params.ui, {
     fileName: this.file.name,
     fileSize: this.file.size,
-    videoId: this.videoId
+    videoId: this.videoId,
+    accountId: this.accountId
   }));
 
   // Callbacks -- should be defaulted in BCUploader

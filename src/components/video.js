@@ -36,6 +36,7 @@ function UIVideo(params) {
     previewPlayerId: params.previewPlayerId, // Maybe null!
     defaultPreviewAction: defaultPreviewAction,
     videoId: params.videoId,
+    accountId: params.accountId,
     rootElement: params.rootElement
   };
 
