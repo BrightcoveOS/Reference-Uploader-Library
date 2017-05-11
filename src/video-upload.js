@@ -16,6 +16,7 @@ function VideoUpload(params) {
 
   // AWS Entities
   this.awsAccessKeyId = param.required('awsAccessKeyId');
+  this.sessionToken = param.required('sessionToken');
   this.bucket = param.required('bucket');
   this.objectKey = param.required('objectKey');
   this.region = param.required('region');
@@ -63,7 +64,8 @@ VideoUpload.prototype.prepareUpload = function prepareUpload() {
     bucket: this.bucket,
     awsSignatureVersion: '4',
     computeContentMd5: true,
-    logging: this.logging, // TODO -- fix this option!
+    sendCanonicalRequestToSignerUrl: true,
+    logging: true, // TODO: fix this parameter
     cryptoMd5Method: md5,
     cryptoHexEncodedHash256: sha256,
   }, this.overrides))
@@ -105,6 +107,12 @@ VideoUpload.prototype.startUpload = function startUpload(evap) {
     complete: this.complete.bind(this),
     uploadInitiated: this.onUploadInitiated,
     progress: this.progress.bind(this),
+    xAmzHeadersAtInitiate: {
+      'X-Amz-Security-Token': this.sessionToken,
+    },
+    xAmzHeadersCommon: {
+      'X-Amz-Security-Token': this.sessionToken,
+    },
   })
   .then(this.ingest.bind(this));
 };

@@ -1,21 +1,20 @@
 'use strict';
 
-var aws = require('aws-sdk');
+var url = require('url');
 
 var brightcove = require('../brightcove');
 var config = require('../config');
+var db = require('../db');
 
 module.exports = function ingest(req, res) {
   var { videoId } = req.params;
   var { bucket, objectKey } = req.body;
-  var s3 = new aws.S3();
-  var signedUrl = s3.getSignedUrl('getObject', {Bucket: bucket, Key: objectKey, Expires: 3600});
   var accountId = config.brightcove.accountId;
 
+  var url = db.getApiRequestUrl(videoId);
+
   brightcove.post(`https://ingest.api.brightcove.com/v1/accounts/${accountId}/videos/${videoId}/ingest-requests`, {
-    master: {
-      url: signedUrl,
-    },
+    master: {url},
     profile: 'high-resolution',
   })
   .then((result) => res.json({result}))
