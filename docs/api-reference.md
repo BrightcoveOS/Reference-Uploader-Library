@@ -284,6 +284,25 @@ BCUploader({
 
 ---
 
+#### logging (bool)
+
+> Enable Evaporate's debug logging to the console if true
+
+This option turns on very verbose logging to console. It includes information about each part that is being uploaded, what information is being signed and what signatures were calculated on the server, and more.
+
+ * Defaut: false
+
+Example:
+
+```js
+<script>
+BCUploader({
+  logging: true
+  // ...
+});
+</script>
+```
+
 #### evaporate (object)
 
 > Config passed directly to evaporate, bypassing Evaporate Brightcove

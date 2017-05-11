@@ -52,6 +52,7 @@ function BCUploader(params) {
   };
 
   // optional evaporate overrides
+  this.logging = param.optional('logging', false);
   this.overrides = param.optional('evaporate', {});
 }
 
@@ -80,6 +81,7 @@ BCUploader.prototype.createVideo = function createVideo(file) {
   return postJson(this.urls.createVideoEndpoint, {name: file.name})
     .then(function(response) {
       var params = Object.assign(response, self.callbacks, self.urls, {
+        logging: self.logging,
         file: file,
         ui: self.videoUI,
         overrides: self.overrides

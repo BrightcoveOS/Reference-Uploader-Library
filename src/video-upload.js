@@ -31,7 +31,8 @@ function VideoUpload(params) {
   this.ingestUrl = param.required('ingestUploadEndpoint') + '/' + this.videoId;
 
   // Configure misc Evaporate options
-  this.overrides = param.optional('overrides', {});
+  this.logging = param.required('logging');
+  this.overrides = param.required('overrides');
 
   // Create UI element to represent upload
   this.completed = false;
@@ -65,7 +66,7 @@ VideoUpload.prototype.prepareUpload = function prepareUpload() {
     awsSignatureVersion: '4',
     computeContentMd5: true,
     sendCanonicalRequestToSignerUrl: true,
-    logging: true, // TODO: fix this parameter
+    logging: this.logging,
     cryptoMd5Method: md5,
     cryptoHexEncodedHash256: sha256,
   }, this.overrides))
