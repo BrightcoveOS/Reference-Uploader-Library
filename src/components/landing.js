@@ -66,8 +66,6 @@ UILanding.prototype.render = function render() {
   heading.innerHTML = this.text;
   this.node.appendChild(heading);
 
-  // TODO -- create drag n drop area
-
   var input = document.createElement('input');
   input.type = 'file';
   input.classList.add('bcuploader-landing_file-input');

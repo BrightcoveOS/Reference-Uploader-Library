@@ -50,6 +50,25 @@ router.get('/upload', function(req, res) {
 
 ---
 
+#### `createVideoFailureText` (string)
+
+> Text shown to user when the server side implementation of the `createVideoEndpoint` crashes.
+
+ * Default: 'Oops! We weren\'t able to upload your video to our servers. Try a different video or try again later.'
+ * Any non-200 response should be enough to trigger this text appearing above the drag 'n drop zone.
+ * Consider translating this string if you want to serve a non-English target audience.
+
+```html
+<script>
+BCUploader({
+  createVideoFailureText: 'The server\'s on fire! Try uploading later.',
+  // ...
+});
+</script>
+```
+
+---
+
 #### `signUploadEndpoint` (string)
 
 > URL on server which signs S3 uploads using AWS secret key (without transmitting the secret key)

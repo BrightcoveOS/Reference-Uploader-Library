@@ -38,6 +38,10 @@ function BCUploader(params) {
 
   // wire up the UI and wait for user interaction
   this.landingText = param.optional('landingText', 'Drag Video Uploads Here');
+  this.createVideoFailureText = param.optional(
+    'createVideoFailureText',
+    'Oops! We weren\'t able to upload your video to our servers. Try a different video or try again later.'
+  );
   this.setupUI();
 
   // Video UI config
@@ -80,9 +84,7 @@ BCUploader.prototype.createVideo = function createVideo(file) {
   var self = this;
   return postJson(this.urls.createVideoEndpoint, {name: file.name})
     .catch(function() {
-      // TODO: make this text customizable.
-      // TODO: fire onError callback
-      self.ui.showError('Oops! We weren\'t able to upload your video to our servers. Try a different video or try again later.');
+      self.ui.showError(self.createVideoFailureText);
     })
     .then(function(response) {
       var params = Object.assign(response, self.callbacks, self.urls, {
