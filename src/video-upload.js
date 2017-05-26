@@ -119,9 +119,15 @@ VideoUpload.prototype.startUpload = function startUpload(evap) {
 };
 
 VideoUpload.prototype.ingest = function ingest() {
+  var self = this;
   return postJson(this.ingestUrl, {
     bucket: this.bucket,
     objectKey: this.objectKey,
+  })
+  .catch(function(response) {
+    var err = new Error(response.statusText);
+    err.response = response;
+    self.error(err);
   });
 };
 
