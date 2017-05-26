@@ -1,12 +1,14 @@
 .bcuploader-root {position: relative;}
 
-
+.bcuploader-error.is-hidden,
 .bcuploader-preview.is-hidden {display: none;}
+
 .bcuploader-preview.is-shown {position: fixed; z-index: 2; top: 0; right: 0; left: 0; bottom: 0;}
 .bcuploader-preview_overlay {position: absolute; z-index: 1; background: black; opacity: 0.4; height: 100%; width: 100%; top:0; left: 0}
 .bcuploader-preview_player {position: absolute; z-index: 2; border: none; top: 20px; height: calc(100% - 40px); left: 20px; width: calc(100% - 40px);}
 .bcuploader-preview_close-button {position: absolute; z-index: 2; top:0; right: 0; cursor: hand; background: black; color: white; font-size: 14px;}
 
+.bcuploader-error,
 .bcuploader-video,
 .bcuploader-landing {background-color: #f7f7f9; border: 1px solid #e1e1e8; border-radius: 4px; padding: 30px; max-width: 400px; margin: auto; text-align: center;}
 .bcuploader-landing.is-dragover {border: 5px solid #9d9db4; padding: 26px; background-color: #d4e1f7;}
@@ -21,6 +23,8 @@
 .bcuploader-video.is-started {}
 .bcuploader-video.is-transcoding {}
 .bcuploader-video.is-preview {}
+
+.bcuploader-error,
 .bcuploader-video.is-error {color: #a94442; background-color: #f2dede; border-color: #ebccd1;}
 
 .bcuploader-video_file-name {position: relative; z-index:1; display: block; float: left;  text-align: left;}

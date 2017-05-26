@@ -79,6 +79,11 @@ BCUploader.prototype.render = function render() {
 BCUploader.prototype.createVideo = function createVideo(file) {
   var self = this;
   return postJson(this.urls.createVideoEndpoint, {name: file.name})
+    .catch(function() {
+      // TODO: make this text customizable.
+      // TODO: fire onError callback
+      self.ui.showError('Oops! We weren\'t able to upload your video to our servers. Try a different video or try again later.');
+    })
     .then(function(response) {
       var params = Object.assign(response, self.callbacks, self.urls, {
         logging: self.logging,

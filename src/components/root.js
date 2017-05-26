@@ -5,6 +5,7 @@
 
 var UILanding = require('./landing');
 var UIPreview = require('./preview');
+var UIError = require('./error');
 
 function UIRoot(params) {
   // Protect against forgetting the new keyword when instantiating objects
@@ -19,12 +20,14 @@ function UIRoot(params) {
   });
   this.preview = new UIPreview({});
   this.videos = [];
+  this.error = new UIError({});
 }
 
 UIRoot.prototype.render = function render() {
   this.node.innerHTML = '';
   this.node.className = 'bcuploader-root';
 
+  this.node.appendChild(this.error.render());
   this.node.appendChild(this.preview.render());
   this.node.appendChild(this.landing.render());
 
@@ -40,6 +43,11 @@ UIRoot.prototype.render = function render() {
 
 UIRoot.prototype.addVideo = function addVideo(video) {
   this.videos.push(video);
+  this.render();
+};
+
+UIRoot.prototype.showError = function showError(message) {
+  this.error.showMessage(message);
   this.render();
 };
 

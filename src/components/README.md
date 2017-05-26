@@ -13,6 +13,10 @@ Here's a block diagram of the logical hierarchy between the components:
  -------------------------------------------------------
  |                    Root                             |
  |     ------------------------------------------      |
+ |     |              Error                     |      |
+ |     ------------------------------------------      |
+ |                                                     |
+ |     ------------------------------------------      |
  |     |              Preview                   |      |
  |     ------------------------------------------      |
  |                                                     |
@@ -41,6 +45,16 @@ Here's a block diagram of the logical hierarchy between the components:
 
 This component is a container for the other components. It
 can have child components to added to it, or removed from it.
+
+### Error
+
+Displays errors related to the `createVideoEnpoint` or other problems
+not specific to the upload of one video. Initially hidden.
+
+### Preview
+
+Shows the video uploaded (if possible) when clicked on by the user.
+By default this is an overlay div that is initially empty and hidden.
 
 ### Landing
 
