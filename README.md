@@ -33,3 +33,7 @@ See the [quick start guide](./docs/quick-start.md).
 ## API Reference
 
 See the [API docs](./docs/api-reference.md).
+
+## Implementing Server API
+
+See the [implementation docs](./docs/implementing-server-api.md)
